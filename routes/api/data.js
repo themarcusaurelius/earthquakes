@@ -8,7 +8,7 @@ const URL = `https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_day.g
 function pingElasticsearch() {
     client.ping({
         requestTimeout: 30000,
-      }, function(error) {
+      }, function(error,res) {
         if (error) {
             console.error('elasticsearch cluster is down!');
         } else {
@@ -91,12 +91,14 @@ indexAllDocs = async () => {
 
 
 //================== Official API Call ==================\\
-router.get('/earthquakes', () => {
+router.get('/earthquakes', function (req, res) {
+    res.send('Running Application...');
     console.log('Loading Application...')
-    setInterval( () => { 
+    
+    setInterval(() => { 
         pingElasticsearch()
-        indexAllDocs();
+        indexAllDocs(res);
     }, 30000);
 });
-
+ 
 module.exports = router;
