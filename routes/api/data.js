@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const axios = require('axios')
 const client = require('../../elasticsearch/connection');
-const URL = `https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_day.geojson`;
+const URL = `https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_hour.geojson`;
 
  //======= Check that Elasticsearch is up and running =======\\
 function pingElasticsearch() {
@@ -38,7 +38,8 @@ indexAllDocs = async () => {
             earthquakeObject = {
                 place: results.properties.place,
                 time: results.properties.time,
-                updated: results.properties.updated,
+                tiamp: results.properties.time,
+                updmestated: results.properties.updated,
                 tz: results.properties.tz,
                 url: results.properties.url,
                 detail: results.properties.detail,
@@ -77,7 +78,7 @@ indexAllDocs = async () => {
             }
         ));
 
-        if (EARTHQUAKES.data.length > 0) {
+        if (EARTHQUAKES.data.length) {
             indexAllDocs();
         } else {
             console.log('All Data Has Been Indexed!');
@@ -98,7 +99,7 @@ router.get('/earthquakes', function (req, res) {
     setInterval(() => { 
         pingElasticsearch()
         indexAllDocs(res);
-    }, 30000);
+    }, 120000);
 });
  
 module.exports = router;
